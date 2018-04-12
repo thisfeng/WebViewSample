@@ -26,7 +26,7 @@ import java.io.File;
 
 /**
  *
- * 
+ *
  * fix 7.0文件访问，测试OK 8.0； 7.0； 6.0 ；4.4
  */
 public class MainActivity extends AppCompatActivity {
@@ -101,15 +101,7 @@ public class MainActivity extends AppCompatActivity {
             //取消拍照或者图片选择时
             if (resultCode != RESULT_OK) {
                 //一定要返回null,否则<input file> 就是没有反应
-                if (uploadMessage != null) {
-                    uploadMessage.onReceiveValue(null);
-                    uploadMessage = null;
-                }
-                if (uploadMessageAboveL != null) {
-                    uploadMessageAboveL.onReceiveValue(null);
-                    uploadMessageAboveL = null;
-
-                }
+                returnNullValue();
             }
 
             //拍照成功和选取照片时
@@ -194,21 +186,28 @@ public class MainActivity extends AppCompatActivity {
             public void onCancel(DialogInterface dialog) {
 
                 //一定要返回null,否则<input type='file'>
-                if (uploadMessage != null) {
-                    uploadMessage.onReceiveValue(null);
-                    uploadMessage = null;
-                }
-                if (uploadMessageAboveL != null) {
-                    uploadMessageAboveL.onReceiveValue(null);
-                    uploadMessageAboveL = null;
-
-                }
+                returnNullValue();
             }
         });
 
 
         builder.show();
 
+    }
+
+    /**
+     * 解决再次点击无响应问题
+     */
+    private void returnNullValue() {
+        if (uploadMessage != null) {
+            uploadMessage.onReceiveValue(null);
+            uploadMessage = null;
+        }
+        if (uploadMessageAboveL != null) {
+            uploadMessageAboveL.onReceiveValue(null);
+            uploadMessageAboveL = null;
+
+        }
     }
 
     @Override
@@ -224,7 +223,12 @@ public class MainActivity extends AppCompatActivity {
                     new AlertDialog.Builder(this)
                             .setTitle("无法拍照")
                             .setMessage("您未授予拍照权限")
-                            .setNegativeButton("取消", null)
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    returnNullValue();
+                                }
+                            })
                             .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
